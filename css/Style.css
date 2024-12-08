@@ -1,0 +1,302 @@
+* {
+    box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        padding: 10px;
+    }
+
+    .container {
+        display: flex;
+        width: 100%;
+        height: 90%;
+        border-radius: 8px;
+        margin: 5px;
+    }
+
+    .form-container {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 800px;
+    }
+
+    .form-container h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .sidebar h3 {
+        text-align: center;
+        color: #333;
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+
+    .form-container p {
+        text-align: center;
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    .form-container label {
+        font-weight: bold;
+        display: block;
+        margin-top: 10px;
+        color: #333;
+        font-size: 16px;
+    }
+
+    .form-container input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .sidebar input[type="text"] {
+        width: 100%;
+        height: 100px;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .form-container button[type="submit"],
+    .sidebar button[type="submit"] {
+        width: 100%;
+        padding: 10px 15px;
+        margin-top: 15px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .form-container button[type="submit"]:hover,
+    .sidebar button[type="submit"]:hover {
+        background-color: #45a049;
+    }
+
+    .btn {
+        background-color: #FFF;
+        color: #4CAF50;
+        border: none;
+        padding: 5px 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.5rem;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
+    .btn:hover {
+        background-color: #ddd;
+    }
+
+    /* Estilo da sidebar */
+    .sidebar {
+        width: 20%;
+        height: 90%;
+        background-color: #fff;
+        color: #fff;
+        padding: 20px;
+        border-radius: 8px 8px 8px 8px;
+        margin-right: 10px;
+    }
+
+    .sidebar .profile {
+        text-align: center;
+    }
+
+    .sidebar .profile-photo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+    }
+
+    /* Estilo da agenda */
+    .agenda {
+        width: 80%;
+        height: 90%;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        border-radius: 8px 8px 8px 8px;
+    }
+
+    .agenda-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .agenda-header h2 {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    .agenda-body {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+    }
+
+    .agenda-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: center;
+        font-family: Arial, sans-serif;
+    }
+
+    .agenda-table th, .agenda-table td {
+        border: 1px solid #ccc;
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .agenda-table th {
+        background-color: #ddd;
+    }
+
+    .agenda-table td {
+        height: 50px;
+        cursor: pointer;
+    }
+
+    .disabled {
+        background-color: #f4f4f4;
+        color: #999;
+        pointer-events: none; /* Não permite clique */
+    }
+
+    .available:hover {
+        background-color: #e9f5f2;
+    }
+
+    .selected {
+        background-color: #57a773;
+        color: white;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 50%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.3s;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    /* Responsivo para telas menores */
+    @media (max-width: 775px) {
+        .form-container {
+            padding: 15px;
+        }
+
+        .form-container h1 {
+            font-size: 24px;
+        }
+
+        .form-container p {
+            font-size: 13px;
+        }
+
+        .form-container button[type="submit"] {
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        .agenda-table th, .agenda-table td {
+            border: 1px solid #ccc;
+            padding: 5px;
+            font-size: 10px;
+        }
+    }
+
+    @media (max-width: 550px) {
+        .form-container {
+            padding: 10px;
+        }
+
+        .form-container h1 {
+            font-size: 18px;
+        }
+
+        .form-container p {
+            font-size: 10px;
+        }
+
+        .form-container button[type="submit"] {
+            font-size: 10px;
+            padding: 5px;
+        }
+
+        .form-container label {
+            font-size: 12px;
+        }
+
+        .agenda-table th, .agenda-table td {
+            border: 1px solid #ccc;
+            padding: 5px;
+            font-size: 8px;
+        }
+
+        .sidebar h3 {
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar .profile-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+    }
