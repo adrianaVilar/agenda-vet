@@ -24,7 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const data = await response.json();
-            console.log(data);
             return data;
         } catch (error) {
             console.error("Erro ao buscar consultas:", error);
@@ -62,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Normalizar os nomes das propriedades
         const normalizedAppointments = appointments.map(app => ({
-            data: app["data"]?.trim(), // Remove caracteres invisíveis, se houver
+            data: new Date(`${app["data"]?.trim()}` + "T" + `${app["hora"]?.trim()}`).getTime(), // Remove caracteres invisíveis e transforma em Date
             hora: app["hora"]?.trim(),
             id_usuario: app["id_usuario"]?.trim(),
             motivo: app["motivo"]?.trim()
@@ -79,8 +78,13 @@ document.addEventListener("DOMContentLoaded", function () {
             // Colunas dos dias da semana
             weekDates.forEach((day) => {
                 const cell = document.createElement("td");
+                const availableSlots = document.querySelectorAll(".available");
+                const dayInput = document.getElementById("selected-day");
+                const timeInput = document.getElementById("selected-time");
+                const submitButton = document.getElementById("submit-button");
+                const date = new Date(`${day.toLocaleDateString("pt-BR").split("/").reverse().join("-")}` + "T" + `${hour.toString().padStart(2, "0")}:00`).getTime();
+            
             //     const today = new Date();
-                const date = day.toLocaleDateString("pt-BR").split("/").reverse().join("-"); // AAAA-MM-DD
             //     const isPast = new Date(date) < today || (new Date(date).toDateString() === today.toDateString() && hour <= today.getHours());
             //     const availableSlots = document.querySelectorAll(".available");
             //     const dayInput = document.getElementById("selected-day");
@@ -118,36 +122,25 @@ document.addEventListener("DOMContentLoaded", function () {
             //     row.appendChild(cell);
             // });
             // tbody.appendChild(row);
-        //}
+            //}
 
-            const appointment = normalizedAppointments.find(app => app.data === date && app.hora === `${hour.toString().padStart(2, "0")}:00`);
-            // console.log(`Data: ${app.data}, Hora: ${app.hora}`);
-            // console.log("DATE: " + date);
-            // // console.log("APP.HORA: " + appointment.hora);
-            // console.log("HOUR: " + `${hour.toString().padStart(2, "0")}:00` );
-
-            appointments.forEach(app => {
-    console.log(`Data: ${app.data}, Hora: ${app.hora}`);  // Aqui você vai ver o conteúdo de data e hora
-
-    const appointment = normalizedAppointments.find(app => app.data === date && app.hora === `${hour.toString().padStart(2, "0")}:00`);
-
-    if (appointment) {
-        console.log("Consulta encontrada:", appointment);
-    } else {
-        console.log("Consulta não encontrada.");
-    }
-});
+            const appointment = normalizedAppointments.find(app => app.data === date);
+            
+            if (appointment) {
+                console.log("Consulta encontrada:", appointment);
+            } else {
+                console.log("Consulta não encontrada.");
+            }
 
             if (appointment) {
-                console.log("ID: " + loggedUserId);
                 fetch('session.php')
                     .then(response => response.json())
                     .then(loggedUserId => {
                         if (loggedUserId.user_id === appointment.id_usuario) {
                             cell.innerHTML = `
-                                <span class="occupied">Ocupado</span>
                                 <button class="edit-button" data-id="${appointment.id}">✏️</button>
-                                <button class="cancel-button" data-id="${appointment.id}">❌</button>
+                                <button class="cancel-button" data-id="${appointment.id}">❌</button><br>
+                                <span class="occupied">Marcado</span>
                             `;
                         } else {
                             cell.textContent = "Indisponível";
@@ -164,6 +157,29 @@ document.addEventListener("DOMContentLoaded", function () {
                 cell.classList.add("disabled");
                 cell.textContent = "-";
             }
+
+            availableSlots.forEach(slot => {
+                slot.addEventListener("click", function () {
+                    // Remove seleção anterior
+                    document.querySelectorAll(".selected").forEach(selected => {
+                        selected.classList.remove("selected");
+                    });
+
+                    // Marca o horário clicado como selecionado
+                    this.classList.add("selected");
+
+                    // Atualiza os campos ocultos do formulário
+                    const a = new Date(Number(this.dataset.date));
+                    const formattedDate = new Intl.DateTimeFormat("en-CA").format(a); 
+                    dayInput.value = formattedDate;
+                    console.log("data string: " + dayInput.value);
+                    timeInput.value = this.dataset.time;
+
+                    // Habilita o botão de envio
+                    submitButton.disabled = false;
+                });
+            });
+
             row.appendChild(cell);
         });
 

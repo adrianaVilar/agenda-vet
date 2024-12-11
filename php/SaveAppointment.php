@@ -10,7 +10,8 @@ $id_usuario = 2; // ID do usuário logado REVER!
 $idade = 30; // Idade do usuário REVER!
 
 // Recebe os dados do formulário
-$data = explode(' - ', $_POST['day'])[0]; // Extrai apenas a data
+$data = explode(' - ', $_POST['day'])[0];
+echo($data); // Extrai apenas a data
 $hora = explode(' - ', $_POST['time'])[0]; // Extrai apenas a hora
 $motivo = "Pet: " . $_POST['pet-name'] . ", " . $_POST['consulta-motivo']; // Combina as informações
 
@@ -26,7 +27,7 @@ $sth->bindvalue(':motivo', $motivo);
 
 $sth->execute();
 
-header("Location: ../html/Agenda.html");
+header("Location: Agenda.php");
 // // Registro
 // if (isset($_POST['save-button'])) {
 //     try {
