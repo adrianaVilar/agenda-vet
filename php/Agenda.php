@@ -31,11 +31,12 @@
                 <button class="btn" id="next-week">&#x203A;</button>
             </div>
 
-            <form id="schedule-form" action="../php/SaveAppointment.php" method="POST">
+            <form id="schedule-form" action="SaveAppointment.php" method="POST">
 
                 <table class="agenda-table">
                     <thead></thead>
-                    <tbody>    
+                    <tbody>
+                        
                     </tbody>
                 </table>
 
@@ -63,9 +64,6 @@
             </form>
         </div>
     </div>
-<script>
-    var loggedUserId = <?php echo $userId ? $userId : 'null'; ?>;
-</script>
 <script src="../js/MarkAppointment.js"></script>
 <script src="../js/Agenda.js"></script>
 

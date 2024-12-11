@@ -1,39 +1,27 @@
-<?php
-session_start();
 
-$servername = "127.0.0.1";
-$username = "admin";
-$password = "admin";
-$dbname = "agenda";
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../css/Style.css"/>
+    <title>Agenda Vet</title>
+</head>
+<body>
 
-$conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+<div class="form-container">
+    <h1>Faça seu login</h1>
 
-if (isset($_POST['login'])) {
-    $email = isset($_POST['email']) ? $_POST['email'] : null;
-    $userpassword = isset($_POST['password']) ? $_POST['password'] : null;
+    <form action="SaveLogin.php" method="POST">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
 
-    try {
-        // Verifica as credenciais
-        $sth = $conn->prepare("SELECT id, nome FROM usuario WHERE email = :email AND senha = MD5(:userpassword)");
-        $sth->bindvalue(':email', $email);
-        $sth->bindvalue(':userpassword', $userpassword);
-        $sth->execute();
+        <label for="password">Senha:</label>
+        <input type="password" id="password" name="password" required>
 
-        $user = $sth->fetch(PDO::FETCH_ASSOC);
+        <button type="submit" name="login">Entrar</button>
+    </form>
+</div>
 
-        if ($user) {
-            // Armazena informações do usuário na sessão
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_name'] = $user['nome'];
-
-            // Redireciona para a página inicial
-            header("Location: ../html/Agenda.php");
-            exit;
-        } else {
-            echo "Email ou senha inválidos.";
-        }
-    } catch (PDOException $e) {
-        echo "Erro ao verificar login: " . $e->getMessage();
-    }
-}
-?>
+</body>
+</html>

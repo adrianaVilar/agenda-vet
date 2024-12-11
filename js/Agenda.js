@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const endHour = 18; // Hora final (18:00)
     const unavailableHours = [12, 13]; // Horários indisponíveis
     let currentDate = new Date(); // Data atual
+    let loggedUserId = null; 
 
     function getWeekDates(date) {
         const startOfWeek = new Date(date);
@@ -22,7 +23,9 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            return await response.json();
+            const data = await response.json();
+            console.log(data);
+            return data;
         } catch (error) {
             console.error("Erro ao buscar consultas:", error);
             return [];
@@ -52,10 +55,18 @@ document.addEventListener("DOMContentLoaded", function () {
         const tbody = document.querySelector(".agenda-table tbody");
         tbody.innerHTML = '';  // Limpa o corpo anterior
 
-        const appointments = await fetchScheduledAppointments(
-            weekDates[0].toISOString().split('T')[0],
-            weekDates[4].toISOString().split('T')[0]
+        let appointments = await fetchScheduledAppointments(
+            weekDates[0].toLocaleDateString("pt-BR").split("/").reverse().join("-"),
+            weekDates[4].toLocaleDateString("pt-BR").split("/").reverse().join("-")
         );
+
+        // Normalizar os nomes das propriedades
+        const normalizedAppointments = appointments.map(app => ({
+            data: app["data"]?.trim(), // Remove caracteres invisíveis, se houver
+            hora: app["hora"]?.trim(),
+            id_usuario: app["id_usuario"]?.trim(),
+            motivo: app["motivo"]?.trim()
+        }));
 
         for (let hour = startHour; hour <= endHour; hour++) {
             const row = document.createElement("tr");
@@ -109,19 +120,41 @@ document.addEventListener("DOMContentLoaded", function () {
             // tbody.appendChild(row);
         //}
 
-            const appointment = appointments.find(app => app.data === date && app.hora === `${hour.toString().padStart(2, "0")}:00`);
+            const appointment = normalizedAppointments.find(app => app.data === date && app.hora === `${hour.toString().padStart(2, "0")}:00`);
+            // console.log(`Data: ${app.data}, Hora: ${app.hora}`);
+            // console.log("DATE: " + date);
+            // // console.log("APP.HORA: " + appointment.hora);
+            // console.log("HOUR: " + `${hour.toString().padStart(2, "0")}:00` );
+
+            appointments.forEach(app => {
+    console.log(`Data: ${app.data}, Hora: ${app.hora}`);  // Aqui você vai ver o conteúdo de data e hora
+
+    const appointment = normalizedAppointments.find(app => app.data === date && app.hora === `${hour.toString().padStart(2, "0")}:00`);
+
+    if (appointment) {
+        console.log("Consulta encontrada:", appointment);
+    } else {
+        console.log("Consulta não encontrada.");
+    }
+});
 
             if (appointment) {
-                if (appointment.id_usuario === loggedUserId) {
-                    cell.innerHTML = `
-                        <span class="occupied">Ocupado</span>
-                        <button class="edit-button" data-id="${appointment.id}">✏️</button>
-                        <button class="cancel-button" data-id="${appointment.id}">❌</button>
-                    `;
-                } else {
-                    cell.textContent = "Indisponível";
-                    cell.classList.add("disabled");
-                }
+                console.log("ID: " + loggedUserId);
+                fetch('session.php')
+                    .then(response => response.json())
+                    .then(loggedUserId => {
+                        if (loggedUserId.user_id === appointment.id_usuario) {
+                            cell.innerHTML = `
+                                <span class="occupied">Ocupado</span>
+                                <button class="edit-button" data-id="${appointment.id}">✏️</button>
+                                <button class="cancel-button" data-id="${appointment.id}">❌</button>
+                            `;
+                        } else {
+                            cell.textContent = "Indisponível";
+                            cell.classList.add("disabled");
+                        }
+                    })
+                    .catch(error => console.error('Erro ao obter os dados da sessão:', error));
             } else if (!unavailableHours.includes(hour)) {
                 cell.classList.add("available");
                 cell.textContent = "Disponível";
@@ -136,7 +169,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         tbody.appendChild(row);
         
-        console.log("Logged User ID:", loggedUserId);
         }
     }
 

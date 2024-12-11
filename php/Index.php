@@ -31,7 +31,7 @@ if (isset($_SESSION['user_id'])) {
             <input type="password" id="password" name="password" required>
 
             <button type="submit" name="register">Cadastrar</button>
-            <a href="../html/Login.php">Já possuo cadastro</a>
+            <a href="Login.php">Já possuo cadastro</a>
         </form>
     </div>
 </body>
