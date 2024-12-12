@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
     saveButton.addEventListener("click", function () {
         const petName = document.getElementById("pet-name").value;
         const consultaMotivo = document.getElementById("consulta-motivo").value;
+        // const petAge = document.getElementById("pet-age").value;
 
         if (petName && consultaMotivo) {
             // Concatena os dados e insere no campo "motivo" do formulário

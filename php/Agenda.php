@@ -7,6 +7,13 @@
     <title>Agenda Vet</title>
 </head>
 <body>
+    <?php 
+        session_start();
+        if(!$_SESSION['logado']) {
+            header("Location: Login.php");
+            exit;
+        }
+    ?>
 <div class="container">
     <!-- Aba lateral -->
         <div class="sidebar form-container">
@@ -53,6 +60,9 @@
                       
                         <label for="pet-name">Nome do Pet:</label>
                         <input type="text" id="pet-name" name="pet-name" required>
+
+                        <label for="pet-age">Idade:</label>
+                        <input type="text" id="pet-age" name="pet-age" required>
 
                         <label for="consulta-motivo">Motivo da Consulta:</label>
                         <textarea id="consulta-motivo" name="consulta-motivo" required></textarea>

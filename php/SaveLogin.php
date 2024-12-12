@@ -25,6 +25,7 @@ if (isset($_POST['login'])) {
             // Armazena informações do usuário na sessão
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['nome'];
+            $_SESSION['logado'] = true;
 
             // Redireciona para a página inicial
             header("Location: Agenda.php");

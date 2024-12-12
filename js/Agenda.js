@@ -83,54 +83,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 const timeInput = document.getElementById("selected-time");
                 const submitButton = document.getElementById("submit-button");
                 const date = new Date(`${day.toLocaleDateString("pt-BR").split("/").reverse().join("-")}` + "T" + `${hour.toString().padStart(2, "0")}:00`).getTime();
-            
-            //     const today = new Date();
-            //     const isPast = new Date(date) < today || (new Date(date).toDateString() === today.toDateString() && hour <= today.getHours());
-            //     const availableSlots = document.querySelectorAll(".available");
-            //     const dayInput = document.getElementById("selected-day");
-            //     const timeInput = document.getElementById("selected-time");
-            //     const submitButton = document.getElementById("submit-button");
-
-            //     if (unavailableHours.includes(hour) || isPast) {
-            //         cell.classList.add("disabled");
-            //         cell.textContent = "-";
-            //     } else {
-            //         cell.classList.add("available");
-            //         cell.dataset.date = date;
-            //         cell.dataset.time = `${hour.toString().padStart(2, "0")}:00`;
-            //         cell.textContent = "Disponível";
-                    
-            //         availableSlots.forEach(slot => {
-            //             slot.addEventListener("click", function () {
-            //                 // Remove seleção anterior
-            //                 document.querySelectorAll(".selected").forEach(selected => {
-            //                     selected.classList.remove("selected");
-            //                 });
-
-            //                 // Marca o horário clicado como selecionado
-            //                 this.classList.add("selected");
-
-            //                 // Atualiza os campos ocultos do formulário
-            //                 dayInput.value = this.dataset.date;
-            //                 timeInput.value = this.dataset.time;
-
-            //                 // Habilita o botão de envio
-            //                 submitButton.disabled = false;
-            //             });
-            //         });
-            //     }
-            //     row.appendChild(cell);
-            // });
-            // tbody.appendChild(row);
-            //}
+                const today = new Date();
+                const isPast = new Date(date) < today || (new Date(date).toDateString() === today.toDateString() && hour <= today.getHours());
 
             const appointment = normalizedAppointments.find(app => app.data === date);
-            
-            if (appointment) {
-                console.log("Consulta encontrada:", appointment);
-            } else {
-                console.log("Consulta não encontrada.");
-            }
 
             if (appointment) {
                 fetch('session.php')
@@ -142,13 +98,19 @@ document.addEventListener("DOMContentLoaded", function () {
                                 <button class="cancel-button" data-id="${appointment.id}">❌</button><br>
                                 <span class="occupied">Marcado</span>
                             `;
+                            console.log("APP  " + JSON.stringify(appointment));
+
+                            console.log("APP id usuario " + appointment.id_usuario);
+                            console.log("APP ID " + appointment.id);
+                            console.log("APP data " + appointment.data);
+                            console.log("APP hora " + appointment.hora);
                         } else {
-                            cell.textContent = "Indisponível";
+                            cell.textContent = "Ocupado";
                             cell.classList.add("disabled");
                         }
                     })
                     .catch(error => console.error('Erro ao obter os dados da sessão:', error));
-            } else if (!unavailableHours.includes(hour)) {
+            } else if (!unavailableHours.includes(hour) && !isPast) {
                 cell.classList.add("available");
                 cell.textContent = "Disponível";
                 cell.dataset.date = date;
@@ -172,7 +134,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     const a = new Date(Number(this.dataset.date));
                     const formattedDate = new Intl.DateTimeFormat("en-CA").format(a); 
                     dayInput.value = formattedDate;
-                    console.log("data string: " + dayInput.value);
                     timeInput.value = this.dataset.time;
 
                     // Habilita o botão de envio
