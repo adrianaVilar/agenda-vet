@@ -38,26 +38,27 @@
                 <button class="btn" id="next-week">&#x203A;</button>
             </div>
 
-            <form id="schedule-form" action="SaveAppointment.php" method="POST">
-
-                <table class="agenda-table">
-                    <thead></thead>
-                    <tbody>
-                        
-                    </tbody>
-                </table>
+            <table class="agenda-table">
+                <thead></thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+       
+            <form id="schedule-form" action="Save.php" method="POST">
 
                 <!-- Campos escondidos para enviar os dados -->
+                <input type="hidden" name="id" id="appointment-id">
                 <input type="hidden" name="day" id="selected-day">
                 <input type="hidden" name="time" id="selected-time">
-                <button type="submit" id="submit-button" disabled>Confirmar Consulta</button>
+                <button type="submit" id="submit-button" disabled></button>
 
                 <!-- Modal -->
                 <div id="modal" class="modal">
-                    <div class="modal-content">
+                    <div class="modal-content form-container">
                         <span class="close">&times;</span>
                         <h2>Detalhes da Consulta</h2>
-                      
+                        
                         <label for="pet-name">Nome do Pet:</label>
                         <input type="text" id="pet-name" name="pet-name" required>
 
@@ -65,10 +66,10 @@
                         <input type="text" id="pet-age" name="pet-age" required>
 
                         <label for="consulta-motivo">Motivo da Consulta:</label>
-                        <textarea id="consulta-motivo" name="consulta-motivo" required></textarea>
+                        <textarea type="text" id="consulta-motivo" name="consulta-motivo" required></textarea>
 
-                        <button type="button" id="save-button" name="save-button">Salvar Consulta</button>
-                        
+                        <button type="button" id="save-button" name="save-button" style="display: none;"></button>
+
                     </div>
                 </div>
             </form>

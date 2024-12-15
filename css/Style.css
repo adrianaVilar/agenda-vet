@@ -8,7 +8,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        height: 90%;
         margin: 0;
         padding: 10px;
     }
@@ -66,7 +66,8 @@
         border-radius: 4px;
     }
 
-    .sidebar input[type="text"] {
+    .sidebar input[type="text"],
+    .modal textarea[type="text"] {
         width: 100%;
         height: 100px;
         padding: 8px;
@@ -76,7 +77,9 @@
     }
 
     .form-container button[type="submit"],
-    .sidebar button[type="submit"] {
+    .sidebar button[type="submit"],
+    button[type="button"],
+    .activated {
         width: 100%;
         padding: 10px 15px;
         margin-top: 15px;
@@ -109,10 +112,9 @@
         background-color: #ddd;
     }
 
-    /* Estilo da sidebar */
     .sidebar {
         width: 20%;
-        height: 90%;
+        height: 100%;
         background-color: #fff;
         color: #fff;
         padding: 20px;
@@ -132,6 +134,7 @@
     }
 
     /* Estilo da agenda */
+
     .agenda {
         width: 80%;
         height: 90%;
@@ -163,6 +166,7 @@
 
     .agenda-table {
         width: 100%;
+        height: 100%;
         border-collapse: collapse;
         text-align: center;
         font-family: Arial, sans-serif;
