@@ -20,6 +20,7 @@
         <input type="password" id="password" name="password" required>
 
         <button type="submit" name="login">Entrar</button>
+        <a href="Index.php">Realizar cadastro</a>
     </form>
 </div>
 

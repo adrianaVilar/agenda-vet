@@ -4,16 +4,17 @@ document.addEventListener("DOMContentLoaded", function () {
     const weekLabel = document.getElementById("week-label");
     const submitButton = document.getElementById("submit-button");
     const modal = document.getElementById("modal");
+    const confirmModal = document.getElementById("confirm-modal");
     const closeModal = document.querySelector(".close");
     const saveAppointment = document.getElementById("save-button");
     const form = document.getElementById("schedule-form");
     const dayInput = document.getElementById("selected-day");
     const timeInput = document.getElementById("selected-time");
+    const sideAlert = document.getElementById("side-alert");
     const startHour = 8; // Hora inicial (8:00)
     const endHour = 18; // Hora final (18:00)
     const unavailableHours = [12, 13]; // Horários indisponíveis
     let currentDate = new Date(); // Data atual
-    let loggedUserId = null;
     let dataId = null;
     let normalizedAppointments = null;
 
@@ -102,9 +103,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     .then(loggedUserId => {
                         if (loggedUserId.user_id === appointment.id_usuario) {
                             cell.innerHTML = `
-                                <button class="edit-button" data-id="e${appointment.id}" >✏️</button>
-                                <button class="cancel-button" data-id="c${appointment.id}" >❌</button><br>
-                                <span class="occupied">Marcado</span>
+                                <div class="edit">
+                                    <span class="occupied">Marcado</span>
+                                    <button class="edit-button" data-id="e${appointment.id}" >✏️</button>
+                                    <button class="cancel-button" data-id="c${appointment.id}" >❌</button><br>
+                                </div>
                             `;
                             cell.dataset.date = date;
                         } else {
@@ -155,9 +158,14 @@ document.addEventListener("DOMContentLoaded", function () {
     tableContainer.addEventListener("click", function (event) {
         if (event.target.classList.contains("edit-button")) {
             dataId = event.target.dataset.id; // Recupera o data-id do botão clicado
-            console.log(`Botão edit clicado! Data-id: ${dataId}`);
             document.getElementById("appointment-id").value = dataId; // Atualiza o campo oculto no formulário
             handleEditAppointment(); // Chama a função de edição
+        }
+
+        if (event.target.classList.contains("cancel-button")) {
+            dataId = event.target.dataset.id;
+            document.getElementById("appointment-id").value = dataId;
+            handleCancelAppointment();
         }
     });
 
@@ -171,32 +179,43 @@ document.addEventListener("DOMContentLoaded", function () {
         submitButton.textContent = "Editar consulta";
     }
 
-    document.querySelectorAll(".cancel-button").forEach(button => {
-        console.log("aqui");
-        button.addEventListener("click", handleCancelAppointment);
-    });
-
-    function handleCancelAppointment(event) {
+    // Função de deleção
+    async function handleCancelAppointment() {
         removeSelected();
+        dataId = dataId.substring(1);
 
-        const appointmentId = event.target.dataset.id;
-        console.log(appointmentId);
+        const closeConfirmModal = document.getElementById("close-confirm-modal");
+        const confirmButton = document.getElementById("confirm-cancel");
+        const cancelButton = document.getElementById("cancel-cancel");
 
-        if (confirm("Deseja realmente cancelar esta consulta?")) {
-            fetch(`../php/DeleteAppointment.php?id=${appointmentId}`, { method: "POST" })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("Consulta cancelada com sucesso!");
-                        updateAgenda(); // Atualiza a agenda
-                    } else {
-                        alert("Erro ao cancelar a consulta.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Erro ao cancelar a consulta:", error);
+        // Exibir o modal de confirmação
+        confirmModal.style.display = "block";
+
+        closeConfirmModal.onclick = () => confirmModal.style.display = "none";
+        cancelButton.onclick = () => confirmModal.style.display = "none";
+
+        // Confirmar cancelamento
+        confirmButton.onclick = async () => {
+            confirmModal.style.display = "none";
+
+            try {
+                const response = await fetch(`../php/DeleteAppointment.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `id=${dataId}`
                 });
-        }
+                const data = await response.json();
+
+                if (data.success) {
+                    alert("Consulta cancelada com sucesso!");
+                    updateAgenda();
+                } else {
+                    alert("Erro ao cancelar a consulta.");
+                }
+            } catch (error) {
+                console.error("Erro ao cancelar a consulta:", error);
+            }
+        };
     }
 
     // Navegação entre semanas
@@ -216,8 +235,6 @@ document.addEventListener("DOMContentLoaded", function () {
     submitButton.addEventListener("click", function (event) {
         event.preventDefault();
         modal.style.display = "block";
-
-            console.log("data id => " + dataId);
 
         if(dataId != null) {
             saveAppointment.style.display = "block";
@@ -241,6 +258,10 @@ document.addEventListener("DOMContentLoaded", function () {
         if (event.target === modal) {
             modal.style.display = "none";
         }
+
+        if (event.target === confirmModal) {
+            confirmModal.style.display = "none";
+        }
     });
 
     // Salva os dados e envia o formulário
@@ -250,7 +271,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
         form.submit();
         modal.style.display = "none";
+        alert("Consulta salva com sucesso!");
     });
+
+    // Verificar se há consultas marcadas
+    async function fetchScheduledAppointmentsById() {
+        try {
+            const response = await fetch(`../php/GetAppointmentsByUserId.php`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+
+            if(data.length == 0) {
+                sideAlert.style.display = "block";
+                sideAlert.textContent = "Você ainda não possui consultas marcadas. Clique em um horário disponível para marcar."
+            }
+            return data;
+        } catch (error) {
+            console.error("Erro ao buscar consultas:", error);
+            return [];
+        }
+    }
+
+    fetchScheduledAppointmentsById();
 
     // Função para remover seleção anterior do dia
     function removeSelected() {

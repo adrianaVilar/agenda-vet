@@ -23,8 +23,6 @@ $sth->bindvalue(':motivo', $motivo);
 $id = substr($_POST['id'], 1);
 $sth->bindvalue(':id', $id);
 
-var_dump($id, $idade, $motivo);
-
 $sth->execute();
 
 header("Location: Agenda.php");

@@ -23,7 +23,7 @@ if (isset($_POST['register'])) {
         $sth->execute();
 
         // Redirecionar para a página de login após o cadastro
-        header("Location: ../html/Login.html");
+        header("Location: Login.php");
         exit;
     } catch (PDOException $e) {
         echo "Erro ao cadastrar: " . $e->getMessage();
@@ -32,7 +32,7 @@ if (isset($_POST['register'])) {
 
 // Já possuo cadastro
 if (isset($_POST['for-login'])) {
-    header("Location: ../html/Login.html");
+    header("Location: Location: Login.php");
     exit;
 }
 ?>
