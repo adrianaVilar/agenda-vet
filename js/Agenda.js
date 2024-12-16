@@ -90,7 +90,6 @@ document.addEventListener("DOMContentLoaded", function () {
             // Colunas dos dias da semana
             weekDates.forEach((day) => {
                 const cell = document.createElement("td");
-                const availableSlots = document.querySelectorAll(".available");
                 const date = new Date(`${day.toLocaleDateString("pt-BR").split("/").reverse().join("-")}` + "T" + `${hour.toString().padStart(2, "0")}:00`).getTime();
                 const today = new Date();
                 const isPast = new Date(date) < today || (new Date(date).toDateString() === today.toDateString() && hour <= today.getHours());
@@ -126,32 +125,38 @@ document.addEventListener("DOMContentLoaded", function () {
                 cell.textContent = "-";
             }
 
-            availableSlots.forEach(slot => {
-                slot.addEventListener("click", function () {
-                    removeSelected();
-
-                    // Marca o horário clicado como selecionado
-                    this.classList.add("selected");
-
-                    // Atualiza os campos ocultos do formulário
-                    const a = new Date(Number(this.dataset.date));
-                    const formattedDate = new Intl.DateTimeFormat("en-CA").format(a); 
-                    dayInput.value = formattedDate;
-                    timeInput.value = this.dataset.time;
-
-                    // Habilita o botão de envio
-                    submitButton.disabled = false;
-                    submitButton.classList.add("activated");
-                    submitButton.textContent = "Confirmar consulta";
-                });
-            });
-
             row.appendChild(cell);
         });
 
         tbody.appendChild(row);
-        
-        }
+
+        const availableSlots = document.querySelectorAll(".available");
+        availableSlots.forEach(slot => {
+            slot.addEventListener("click", function () {
+                removeSelected();
+
+                // Marca o horário clicado como selecionado
+                this.classList.add("selected");
+
+                // Atualiza os campos ocultos do formulário
+                const a = new Date(Number(this.dataset.date));
+                const formattedDate = new Intl.DateTimeFormat("en-CA").format(a); 
+                dayInput.value = formattedDate;
+                timeInput.value = this.dataset.time;
+
+                // Habilita o botão de envio
+                //submitButton.disabled = false;
+                //submitButton.classList.add("activated");
+                //submitButton.textContent = "Confirmar consulta";
+                
+                modal.style.display = "block";
+                saveAppointment.style.display = "block";
+                form.action = "SaveAppointment.php";
+                saveAppointment.textContent = "Salvar consulta"
+            });
+        });
+    
+    }
     }
 
     // Eventos para editar e cancelar

@@ -260,7 +260,6 @@
 
     .agenda-table td {
         height: 50px;
-        cursor: pointer;
     }
 
     .disabled {
@@ -270,10 +269,11 @@
     }
 
     .available:hover {
+        cursor: pointer;
         background-color: #e9f5f2;
     }
 
-    .selected {
+    .selected:hover, .selected {
         background-color: #57a773;
         color: white;
     }
