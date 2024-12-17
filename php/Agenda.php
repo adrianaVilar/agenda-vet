@@ -59,7 +59,6 @@
             <input type="hidden" name="id" id="appointment-id">
             <input type="hidden" name="day" id="selected-day">
             <input type="hidden" name="time" id="selected-time">
-            <button type="submit" id="submit-button" disabled></button>
 
             <!-- Modal Salvar e Editar -->
             <div id="modal" class="modal">
@@ -77,7 +76,6 @@
                     <textarea type="text" id="consulta-motivo" name="consulta-motivo" required></textarea>
 
                     <button type="button" id="save-button" name="save-button" style="display: none;"></button>
-
                 </div>
             </div>
 

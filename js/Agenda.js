@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const tableContainer = document.querySelector(".agenda-table");
     const theadRow = document.querySelector(".agenda-table thead");
     const weekLabel = document.getElementById("week-label");
-    const submitButton = document.getElementById("submit-button");
     const modal = document.getElementById("modal");
     const confirmModal = document.getElementById("confirm-modal");
     const closeModal = document.querySelector(".close");
@@ -93,44 +92,49 @@ document.addEventListener("DOMContentLoaded", function () {
                 const date = new Date(`${day.toLocaleDateString("pt-BR").split("/").reverse().join("-")}` + "T" + `${hour.toString().padStart(2, "0")}:00`).getTime();
                 const today = new Date();
                 const isPast = new Date(date) < today || (new Date(date).toDateString() === today.toDateString() && hour <= today.getHours());
+                const appointment = normalizedAppointments.find(app => app.data === date);
 
-            const appointment = normalizedAppointments.find(app => app.data === date);
+                if (appointment) {
+                    fetch('session.php')
+                        .then(response => response.json())
+                        .then(loggedUserId => {
+                            if (loggedUserId.user_id === appointment.id_usuario) {
+                                cell.innerHTML = `
+                                    <div class="edit">
+                                        <span class="occupied">Marcado</span>
+                                        <button class="edit-button" data-id="e${appointment.id}" >✏️</button>
+                                        <button class="cancel-button" data-id="c${appointment.id}" >❌</button><br>
+                                    </div>
+                                `;
+                                cell.dataset.date = date;
+                            } else {
+                                cell.textContent = "Ocupado";
+                                cell.classList.add("disabled");
+                            }
+                        })
+                        .catch(error => console.error('Erro ao obter os dados da sessão:', error));
+                } else if (!unavailableHours.includes(hour) && !isPast) {
+                    cell.classList.add("available");
+                    cell.textContent = "Disponível";
+                    cell.dataset.date = date;
+                    cell.dataset.time = `${hour.toString().padStart(2, "0")}:00`;
+                } else {
+                    cell.classList.add("disabled");
+                    cell.textContent = "-";
+                }
 
-            if (appointment) {
-                fetch('session.php')
-                    .then(response => response.json())
-                    .then(loggedUserId => {
-                        if (loggedUserId.user_id === appointment.id_usuario) {
-                            cell.innerHTML = `
-                                <div class="edit">
-                                    <span class="occupied">Marcado</span>
-                                    <button class="edit-button" data-id="e${appointment.id}" >✏️</button>
-                                    <button class="cancel-button" data-id="c${appointment.id}" >❌</button><br>
-                                </div>
-                            `;
-                            cell.dataset.date = date;
-                        } else {
-                            cell.textContent = "Ocupado";
-                            cell.classList.add("disabled");
-                        }
-                    })
-                    .catch(error => console.error('Erro ao obter os dados da sessão:', error));
-            } else if (!unavailableHours.includes(hour) && !isPast) {
-                cell.classList.add("available");
-                cell.textContent = "Disponível";
-                cell.dataset.date = date;
-                cell.dataset.time = `${hour.toString().padStart(2, "0")}:00`;
-            } else {
-                cell.classList.add("disabled");
-                cell.textContent = "-";
-            }
+                if (isPast) {
+                    cell.classList.add("disabled");
+                }
 
-            row.appendChild(cell);
-        });
+                row.appendChild(cell);
+            });
 
-        tbody.appendChild(row);
+            tbody.appendChild(row);
 
-        const availableSlots = document.querySelectorAll(".available");
+        }
+
+        const availableSlots = document.querySelectorAll(".available") || document.querySelectorAll(".edit-button");
         availableSlots.forEach(slot => {
             slot.addEventListener("click", function () {
                 removeSelected();
@@ -143,20 +147,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 const formattedDate = new Intl.DateTimeFormat("en-CA").format(a); 
                 dayInput.value = formattedDate;
                 timeInput.value = this.dataset.time;
-
-                // Habilita o botão de envio
-                //submitButton.disabled = false;
-                //submitButton.classList.add("activated");
-                //submitButton.textContent = "Confirmar consulta";
                 
                 modal.style.display = "block";
+
                 saveAppointment.style.display = "block";
                 form.action = "SaveAppointment.php";
                 saveAppointment.textContent = "Salvar consulta"
             });
         });
-    
-    }
     }
 
     // Eventos para editar e cancelar
@@ -164,7 +162,13 @@ document.addEventListener("DOMContentLoaded", function () {
         if (event.target.classList.contains("edit-button")) {
             dataId = event.target.dataset.id; // Recupera o data-id do botão clicado
             document.getElementById("appointment-id").value = dataId; // Atualiza o campo oculto no formulário
-            handleEditAppointment(); // Chama a função de edição
+            
+            removeSelected();
+            
+            modal.style.display = "block";
+            saveAppointment.style.display = "block";
+            form.action = "EditAppointment.php";
+            saveAppointment.textContent = "Salvar edição"
         }
 
         if (event.target.classList.contains("cancel-button")) {
@@ -173,16 +177,6 @@ document.addEventListener("DOMContentLoaded", function () {
             handleCancelAppointment();
         }
     });
-
-    // Função de edição
-    function handleEditAppointment() {
-        removeSelected();
-
-        // Habilita o botão de envio
-        submitButton.disabled = false;
-        submitButton.classList.add("activated");
-        submitButton.textContent = "Editar consulta";
-    }
 
     // Função de deleção
     async function handleCancelAppointment() {
@@ -235,22 +229,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     updateAgenda();
-
-    // Abre o modal ao clicar em "Confirmar/Editar Consulta"
-    submitButton.addEventListener("click", function (event) {
-        event.preventDefault();
-        modal.style.display = "block";
-
-        if(dataId != null) {
-            saveAppointment.style.display = "block";
-            form.action = "EditAppointment.php";
-            saveAppointment.textContent = "Salvar edição"
-        } else {
-            saveAppointment.style.display = "block";
-            form.action = "SaveAppointment.php";
-            saveAppointment.textContent = "Salvar consulta"
-        }
-    });
 
     // Fecha o modal
     closeModal.addEventListener("click", function () {
